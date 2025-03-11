@@ -1,12 +1,11 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Compass, Layers, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-// Placeholder for when user hasn't entered their Mapbox token yet
-const PLACEHOLDER_TOKEN = 'YOUR_MAPBOX_TOKEN';
+// Set the Mapbox token directly since it's a public token
+const MAPBOX_TOKEN = 'pk.eyJ1Ijoic2h5aG56IiwiYSI6ImNtN3ZtcWxwczAxaGwyanBocmVrZW5oczYifQ.0S4sp26L8GdaxjCcsrN_AA';
 
 interface MapProps {
   initialCenter?: [number, number];
@@ -14,31 +13,27 @@ interface MapProps {
 }
 
 const Map: React.FC<MapProps> = ({
-  initialCenter = [-98.5795, 39.8283], // Center of USA as default
+  initialCenter = [-98.5795, 39.8283],
   initialZoom = 3,
 }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
-  const [mapToken, setMapToken] = useState<string>(() => {
-    return localStorage.getItem('mapbox_token') || PLACEHOLDER_TOKEN;
-  });
-  const [showTokenInput, setShowTokenInput] = useState(mapToken === PLACEHOLDER_TOKEN);
   const [loading, setLoading] = useState(true);
   const [activePOIFilter, setActivePOIFilter] = useState<string | null>(null);
 
   // Initialize map when component mounts
   useEffect(() => {
-    if (!mapContainer.current || mapToken === PLACEHOLDER_TOKEN) return;
+    if (!mapContainer.current) return;
 
-    mapboxgl.accessToken = mapToken;
+    mapboxgl.accessToken = MAPBOX_TOKEN;
     
     try {
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
-        style: 'mapbox://styles/mapbox/outdoors-v12', // Outdoor style for hiking/activities
+        style: 'mapbox://styles/mapbox/outdoors-v12',
         center: initialCenter,
         zoom: initialZoom,
-        pitch: 30, // Add some 3D perspective
+        pitch: 30,
       });
 
       // Add navigation controls (zoom, rotation)
@@ -71,15 +66,13 @@ const Map: React.FC<MapProps> = ({
         addEventMarker([-99.3, 40.1], 'Kayaking Trip', 'water');
       });
 
-      // Cleanup on unmount
       return () => {
         map.current?.remove();
       };
     } catch (error) {
       console.error("Error initializing map:", error);
-      setShowTokenInput(true);
     }
-  }, [initialCenter, initialZoom, mapToken]);
+  }, [initialCenter, initialZoom]);
 
   // Function to add event markers to the map
   const addEventMarker = (coords: [number, number], title: string, type: string) => {
@@ -119,53 +112,11 @@ const Map: React.FC<MapProps> = ({
     console.log(`Toggled POI filter: ${poiType}`);
   };
 
-  // Save token and initialize map
-  const handleTokenSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const input = document.getElementById('mapbox-token') as HTMLInputElement;
-    const token = input.value.trim();
-    
-    if (token && token !== PLACEHOLDER_TOKEN) {
-      localStorage.setItem('mapbox_token', token);
-      setMapToken(token);
-      setShowTokenInput(false);
-    }
-  };
-
-  if (showTokenInput) {
-    return (
-      <div className="w-full h-full bg-earth-100 rounded-lg shadow-inner flex flex-col items-center justify-center p-4">
-        <h2 className="text-earth-800 text-xl font-semibold mb-4">Mapbox Token Required</h2>
-        <p className="text-earth-600 text-center mb-6">
-          To use the interactive map, please enter your Mapbox public token.
-          You can get one for free at <a href="https://mapbox.com" target="_blank" rel="noopener noreferrer" className="text-forest-600 underline">mapbox.com</a>
-        </p>
-        <form onSubmit={handleTokenSubmit} className="w-full max-w-md">
-          <div className="flex flex-col space-y-4">
-            <input
-              id="mapbox-token"
-              type="text"
-              placeholder="Enter your Mapbox public token"
-              className="w-full h-12 px-4 rounded-lg border border-gray-300 focus:outline-none focus:border-forest-500"
-              defaultValue={mapToken !== PLACEHOLDER_TOKEN ? mapToken : ''}
-            />
-            <button
-              type="submit"
-              className="h-12 bg-forest-600 text-white rounded-lg hover:bg-forest-700 transition-colors"
-            >
-              Save & Load Map
-            </button>
-          </div>
-        </form>
-      </div>
-    );
-  }
-
   return (
     <div className="relative w-full h-full overflow-hidden rounded-lg">
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center bg-earth-100 z-10">
-          <p className="text-earth-800 text-lg">Loading map...</p>
+          <p className="text-earth-800 text-lg">Chargement de la carte...</p>
         </div>
       )}
       
