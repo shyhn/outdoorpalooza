@@ -1,13 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, MapPin, Calendar, Users, ChevronDown, ChevronUp, List, Map as MapIcon } from 'lucide-react';
-import Map from '../components/map/Map';
+import { Search, Filter, MapPin, Calendar, Users } from 'lucide-react';
 import BottomNavigation from '../components/layout/BottomNavigation';
 import EventCard from '../components/events/EventCard';
 import EventsFilter from '../components/events/EventsFilter';
 import { mockEvents, EventData } from '@/data/mockEvents';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 
 const Events = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -22,7 +20,6 @@ const Events = () => {
     date: null,
   });
   const [showFilters, setShowFilters] = useState(false);
-  const [viewMode, setViewMode] = useState<'map' | 'list' | 'split'>('split');
 
   // Handle search
   useEffect(() => {
@@ -122,94 +119,43 @@ const Events = () => {
               />
             </div>
           )}
-          
-          {/* View mode toggle */}
-          <div className="flex justify-center mt-2">
-            <div className="bg-white rounded-full shadow p-1 inline-flex">
-              <button 
-                onClick={() => setViewMode('list')}
-                className={cn(
-                  "px-4 py-1.5 rounded-full flex items-center gap-1.5 text-sm font-medium transition-colors",
-                  viewMode === 'list' ? "bg-forest-100 text-forest-800" : "text-gray-600 hover:text-forest-700"
-                )}
-              >
-                <List className="h-4 w-4" />
-                List
-              </button>
-              <button 
-                onClick={() => setViewMode('split')}
-                className={cn(
-                  "px-4 py-1.5 rounded-full flex items-center gap-1.5 text-sm font-medium transition-colors",
-                  viewMode === 'split' ? "bg-forest-100 text-forest-800" : "text-gray-600 hover:text-forest-700"
-                )}
-              >
-                <List className="h-4 w-4" />
-                <MapIcon className="h-4 w-4" />
-              </button>
-              <button 
-                onClick={() => setViewMode('map')}
-                className={cn(
-                  "px-4 py-1.5 rounded-full flex items-center gap-1.5 text-sm font-medium transition-colors",
-                  viewMode === 'map' ? "bg-forest-100 text-forest-800" : "text-gray-600 hover:text-forest-700"
-                )}
-              >
-                <MapIcon className="h-4 w-4" />
-                Map
-              </button>
-            </div>
-          </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <main className="pt-36 pb-20 px-4">
-        <div className="max-w-4xl mx-auto flex flex-col lg:flex-row gap-4">
-          {/* Map View (hidden on small screens when in list mode) */}
-          {(viewMode === 'map' || viewMode === 'split') && (
-            <div className={cn(
-              "w-full transition-all",
-              viewMode === 'map' ? 'h-[calc(100vh-12rem)]' : 'lg:w-1/2 h-[400px] lg:h-[calc(100vh-12rem)]'
-            )}>
-              <Map filteredEvents={filteredEvents} />
-            </div>
-          )}
-
+      <main className="pt-28 pb-20 px-4">
+        <div className="max-w-4xl mx-auto">
           {/* List View */}
-          {(viewMode === 'list' || viewMode === 'split') && (
-            <div className={cn(
-              "flex-1 flex flex-col gap-4",
-              viewMode === 'split' ? 'lg:w-1/2' : 'w-full'
-            )}>
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold text-forest-800">
-                  {filteredEvents.length} {filteredEvents.length === 1 ? 'Event' : 'Events'} Found
-                </h2>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-500">Sort by:</span>
-                  <select 
-                    className="text-sm border-0 bg-transparent focus:ring-0"
-                    defaultValue="date"
-                  >
-                    <option value="date">Date</option>
-                    <option value="proximity">Proximity</option>
-                    <option value="participants">Participants</option>
-                  </select>
-                </div>
+          <div className="w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-forest-800">
+                {filteredEvents.length} {filteredEvents.length === 1 ? 'Event' : 'Events'} Found
+              </h2>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-500">Sort by:</span>
+                <select 
+                  className="text-sm border-0 bg-transparent focus:ring-0"
+                  defaultValue="date"
+                >
+                  <option value="date">Date</option>
+                  <option value="proximity">Proximity</option>
+                  <option value="participants">Participants</option>
+                </select>
               </div>
-
-              {filteredEvents.length === 0 ? (
-                <div className="bg-white rounded-lg p-8 shadow text-center">
-                  <p className="text-gray-500">No events found matching your search criteria.</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 gap-4">
-                  {filteredEvents.map(event => (
-                    <EventCard key={event.id} event={event} />
-                  ))}
-                </div>
-              )}
             </div>
-          )}
+
+            {filteredEvents.length === 0 ? (
+              <div className="bg-white rounded-lg p-8 shadow text-center">
+                <p className="text-gray-500">No events found matching your search criteria.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-4">
+                {filteredEvents.map(event => (
+                  <EventCard key={event.id} event={event} />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </main>
 
