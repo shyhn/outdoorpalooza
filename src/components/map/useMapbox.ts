@@ -2,13 +2,14 @@
 import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { mockEvents, EventData } from '@/data/mockEvents';
 
 // Set the Mapbox token directly since it's a public token
 const MAPBOX_TOKEN = 'pk.eyJ1Ijoic2h5aG56IiwiYSI6ImNtN3ZtcWxwczAxaGwyanBocmVrZW5oczYifQ.0S4sp26L8GdaxjCcsrN_AA';
 
 interface UseMapboxProps {
-  initialCenter: [number, number];
-  initialZoom: number;
+  initialCenter?: [number, number];
+  initialZoom?: number;
 }
 
 interface UseMapboxReturn {
@@ -18,22 +19,52 @@ interface UseMapboxReturn {
   addEventMarker: (coords: [number, number], title: string, type: string) => void;
 }
 
-const useMapbox = ({ initialCenter, initialZoom }: UseMapboxProps): UseMapboxReturn => {
+const useMapbox = ({ 
+  initialCenter = [2.2137, 46.2276], // France center by default
+  initialZoom = 5 
+}: UseMapboxProps = {}): UseMapboxReturn => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [loading, setLoading] = useState(true);
+  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
 
   useEffect(() => {
     if (!mapContainer.current) return;
 
     mapboxgl.accessToken = MAPBOX_TOKEN;
     
+    // Try to get user's location first
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const userCoords: [number, number] = [position.coords.longitude, position.coords.latitude];
+          setUserLocation(userCoords);
+          initializeMap(userCoords);
+        },
+        (error) => {
+          console.warn("Geolocation error:", error);
+          initializeMap(initialCenter);
+        }
+      );
+    } else {
+      console.warn("Geolocation is not supported by this browser.");
+      initializeMap(initialCenter);
+    }
+
+    return () => {
+      map.current?.remove();
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const initializeMap = (center: [number, number]) => {
+    if (!mapContainer.current) return;
+    
     try {
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
         style: 'mapbox://styles/mapbox/outdoors-v12',
-        center: initialCenter,
-        zoom: initialZoom,
+        center: center,
+        zoom: userLocation ? 10 : initialZoom,
         pitch: 30,
       });
 
@@ -61,19 +92,15 @@ const useMapbox = ({ initialCenter, initialZoom }: UseMapboxProps): UseMapboxRet
       map.current.on('load', () => {
         setLoading(false);
         
-        // Example: Add sample event markers
-        addEventMarker([-98.5795, 39.8283], 'Sample Hiking Event', 'hiking');
-        addEventMarker([-97.5, 38.5], 'Mountain Biking Adventure', 'biking');
-        addEventMarker([-99.3, 40.1], 'Kayaking Trip', 'water');
+        // Add all mock events as markers
+        mockEvents.forEach(event => {
+          addEventMarker(event.coords, event.title, event.type);
+        });
       });
-
-      return () => {
-        map.current?.remove();
-      };
     } catch (error) {
       console.error("Error initializing map:", error);
     }
-  }, [initialCenter, initialZoom]);
+  };
 
   // Function to add event markers to the map
   const addEventMarker = (coords: [number, number], title: string, type: string) => {
@@ -82,7 +109,30 @@ const useMapbox = ({ initialCenter, initialZoom }: UseMapboxProps): UseMapboxRet
     // Create custom marker element
     const el = document.createElement('div');
     el.className = 'event-marker';
-    el.style.backgroundColor = type === 'hiking' ? '#6e9b6e' : type === 'biking' ? '#b8937b' : '#7bb7cf';
+    
+    // Set color based on event type
+    let color;
+    switch(type) {
+      case 'hiking':
+        color = '#6e9b6e'; // green
+        break;
+      case 'biking':
+        color = '#b8937b'; // brown
+        break;
+      case 'water':
+        color = '#7bb7cf'; // blue
+        break;
+      case 'camping':
+        color = '#8e6db5'; // purple
+        break;
+      case 'climbing':
+        color = '#cf7b7b'; // red
+        break;
+      default:
+        color = '#7bb7cf'; // default blue
+    }
+    
+    el.style.backgroundColor = color;
     el.style.width = '20px';
     el.style.height = '20px';
     el.style.borderRadius = '50%';

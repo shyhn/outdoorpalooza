@@ -9,8 +9,8 @@ interface MapProps {
 }
 
 const Map: React.FC<MapProps> = ({
-  initialCenter = [-98.5795, 39.8283],
-  initialZoom = 3,
+  initialCenter,
+  initialZoom,
 }) => {
   const [activePOIFilter, setActivePOIFilter] = useState<string | null>(null);
   const { mapContainer, loading, map } = useMapbox({ 
