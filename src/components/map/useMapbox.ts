@@ -71,7 +71,7 @@ const useMapbox = ({
       // Add navigation controls (zoom, rotation)
       map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
       
-      // Add geolocation control
+      // Add geolocation control - this will allow users to re-center on their location
       map.current.addControl(
         new mapboxgl.GeolocateControl({
           positionOptions: {
