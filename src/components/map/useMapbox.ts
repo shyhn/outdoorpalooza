@@ -10,23 +10,26 @@ const MAPBOX_TOKEN = 'pk.eyJ1Ijoic2h5aG56IiwiYSI6ImNtN3ZtcWxwczAxaGwyanBocmVrZW5
 interface UseMapboxProps {
   initialCenter?: [number, number];
   initialZoom?: number;
+  eventsToShow?: EventData[];
 }
 
 interface UseMapboxReturn {
   mapContainer: React.RefObject<HTMLDivElement>;
   map: React.RefObject<mapboxgl.Map | null>;
   loading: boolean;
-  addEventMarker: (coords: [number, number], title: string, type: string) => void;
+  addEventMarker: (coords: [number, number], title: string, type: string, eventId: string) => void;
 }
 
 const useMapbox = ({ 
   initialCenter = [2.2137, 46.2276], // France center by default
-  initialZoom = 5 
+  initialZoom = 5,
+  eventsToShow = mockEvents
 }: UseMapboxProps = {}): UseMapboxReturn => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [loading, setLoading] = useState(true);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  const markersRef = useRef<mapboxgl.Marker[]>([]);
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -55,6 +58,20 @@ const useMapbox = ({
       map.current?.remove();
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Effect to update markers when filtered events change
+  useEffect(() => {
+    if (map.current && !loading) {
+      // Clear existing markers
+      markersRef.current.forEach(marker => marker.remove());
+      markersRef.current = [];
+      
+      // Add filtered event markers
+      eventsToShow.forEach(event => {
+        addEventMarker(event.coords, event.title, event.type, event.id);
+      });
+    }
+  }, [eventsToShow, loading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const initializeMap = (center: [number, number]) => {
     if (!mapContainer.current) return;
@@ -92,10 +109,13 @@ const useMapbox = ({
       map.current.on('load', () => {
         setLoading(false);
         
-        // Add all mock events as markers
-        mockEvents.forEach(event => {
-          addEventMarker(event.coords, event.title, event.type);
-        });
+        // Only add markers if there's no filtered list (added later otherwise)
+        if (!eventsToShow || eventsToShow === mockEvents) {
+          // Add all mock events as markers
+          mockEvents.forEach(event => {
+            addEventMarker(event.coords, event.title, event.type, event.id);
+          });
+        }
       });
     } catch (error) {
       console.error("Error initializing map:", error);
@@ -103,7 +123,7 @@ const useMapbox = ({
   };
 
   // Function to add event markers to the map
-  const addEventMarker = (coords: [number, number], title: string, type: string) => {
+  const addEventMarker = (coords: [number, number], title: string, type: string, eventId: string) => {
     if (!map.current) return;
     
     // Create custom marker element
@@ -145,15 +165,22 @@ const useMapbox = ({
       .setHTML(`
         <div class="p-2">
           <h3 class="font-semibold">${title}</h3>
-          <p class="text-sm text-gray-600">Click to view details</p>
+          <p class="text-sm text-gray-600">
+            <a href="/events/${eventId}" style="color: #2563eb; text-decoration: underline;">
+              Voir détails
+            </a>
+          </p>
         </div>
       `);
     
     // Add marker to map
-    new mapboxgl.Marker(el)
+    const marker = new mapboxgl.Marker(el)
       .setLngLat(coords)
       .setPopup(popup)
       .addTo(map.current);
+      
+    // Store marker reference
+    markersRef.current.push(marker);
   };
 
   return {

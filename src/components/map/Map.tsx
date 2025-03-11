@@ -2,20 +2,24 @@
 import React, { useState } from 'react';
 import useMapbox from './useMapbox';
 import MapPOIFilters from './MapPOIFilters';
+import { EventData } from '@/data/mockEvents';
 
 interface MapProps {
   initialCenter?: [number, number];
   initialZoom?: number;
+  filteredEvents?: EventData[];
 }
 
 const Map: React.FC<MapProps> = ({
   initialCenter,
   initialZoom,
+  filteredEvents,
 }) => {
   const [activePOIFilter, setActivePOIFilter] = useState<string | null>(null);
   const { mapContainer, loading, map } = useMapbox({ 
     initialCenter, 
-    initialZoom 
+    initialZoom,
+    eventsToShow: filteredEvents
   });
 
   // Function to toggle POI filters
