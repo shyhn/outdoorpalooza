@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -6,8 +5,15 @@ import { Search, MapPin, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
+export interface LocationData {
+  id: string;
+  name: string;
+  type: 'region' | 'city';
+  region?: string;
+}
+
 // Liste des régions et grandes villes de France
-const frenchLocations = [
+const frenchLocations: LocationData[] = [
   // Régions
   { id: 'auvergne-rhone-alpes', name: 'Auvergne-Rhône-Alpes', type: 'region' },
   { id: 'bourgogne-franche-comte', name: 'Bourgogne-Franche-Comté', type: 'region' },
@@ -51,13 +57,6 @@ const frenchLocations = [
   { id: 'la-roque-gageac', name: 'La Roque-Gageac', type: 'city', region: 'Nouvelle-Aquitaine' },
   { id: 'mont-saint-michel', name: 'Mont-Saint-Michel', type: 'city', region: 'Normandie' },
 ];
-
-export interface LocationData {
-  id: string;
-  name: string;
-  type: 'region' | 'city';
-  region?: string;
-}
 
 interface LocationAutocompleteProps {
   onLocationSelect: (location: LocationData | null) => void;
