@@ -1,11 +1,11 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import BottomNavigation from '../components/layout/BottomNavigation';
 import Map from '../components/map/Map';
 import { Search, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import EventsFilter from '../components/events/EventsFilter';
-import { mockEvents } from '@/data/mockEvents';
+import { mockEvents, EventData } from '@/data/mockEvents';
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -19,11 +19,61 @@ const Index = () => {
     difficulty: null,
     date: null,
   });
-  const [filteredEvents, setFilteredEvents] = useState(mockEvents);
+  const [filteredEvents, setFilteredEvents] = useState<EventData[]>(mockEvents);
+
+  // Effect to filter events when search query or active filters change
+  useEffect(() => {
+    let results = [...mockEvents];
+    
+    // Filter by search query
+    if (searchQuery.trim() !== '') {
+      const query = searchQuery.toLowerCase();
+      results = results.filter(event => 
+        event.title.toLowerCase().includes(query) || 
+        event.description.toLowerCase().includes(query)
+      );
+    }
+    
+    // Filter by type
+    if (activeFilters.type) {
+      results = results.filter(event => event.type === activeFilters.type);
+    }
+    
+    // Filter by difficulty
+    if (activeFilters.difficulty) {
+      results = results.filter(event => event.difficulty === activeFilters.difficulty);
+    }
+    
+    // Filter by date
+    if (activeFilters.date) {
+      const today = new Date();
+      const weekend = new Date(today);
+      weekend.setDate(today.getDate() + (6 - today.getDay())); // Next Saturday
+      
+      const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+      
+      results = results.filter(event => {
+        const eventDate = new Date(event.date);
+        
+        switch (activeFilters.date) {
+          case 'upcoming':
+            return eventDate >= today;
+          case 'weekend':
+            return eventDate >= today && eventDate <= weekend;
+          case 'month':
+            return eventDate >= today && eventDate <= endOfMonth;
+          default:
+            return true;
+        }
+      });
+    }
+    
+    setFilteredEvents(results);
+  }, [searchQuery, activeFilters]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    // Here we would filter events based on search query
+    // The filtering is handled by the useEffect above
   };
 
   const toggleFilters = () => {
@@ -37,8 +87,7 @@ const Index = () => {
     };
     
     setActiveFilters(newFilters);
-    // Here we would filter events based on the new filters
-    // This is just a placeholder, the actual filtering would depend on your implementation
+    // The filtering is handled by the useEffect above
   };
 
   return (
