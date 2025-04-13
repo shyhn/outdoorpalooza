@@ -1,8 +1,9 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import useMapbox from './useMapbox';
 import MapPOIFilters from './MapPOIFilters';
 import { EventData } from '@/data/mockEvents';
+import { Globe } from 'lucide-react';
 
 interface MapProps {
   initialCenter?: [number, number];
@@ -48,7 +49,8 @@ const Map: React.FC<MapProps> = ({
       {/* Empty state for no filtered events */}
       {filteredEvents && filteredEvents.length === 0 && !loading && (
         <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 z-20">
-          <div className="text-center p-4 rounded-lg">
+          <div className="text-center p-6 rounded-lg">
+            <Globe className="h-12 w-12 text-gray-400 mx-auto mb-3" />
             <h3 className="text-lg font-medium text-gray-900">Aucun événement trouvé</h3>
             <p className="text-sm text-gray-600 mt-1">Essayez d'autres filtres ou une autre localisation</p>
           </div>

@@ -39,11 +39,16 @@ const Index = () => {
     // Filter by selected location
     if (selectedLocation) {
       results = results.filter(event => {
-        if (selectedLocation.type === 'region') {
-          // Filter by region
+        // Match par pays
+        if (selectedLocation.type === 'country') {
+          return event.location.country === selectedLocation.name;
+        }
+        // Match par région
+        else if (selectedLocation.type === 'region') {
           return event.location.region === selectedLocation.name;
-        } else if (selectedLocation.type === 'city') {
-          // Filter by city
+        }
+        // Match par ville
+        else if (selectedLocation.type === 'city') {
           return event.location.city === selectedLocation.name;
         }
         return true;
@@ -89,7 +94,7 @@ const Index = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    // The filtering is handled by the useEffect above
+    // Le filtrage est géré par l'useEffect ci-dessus
   };
 
   const toggleFilters = () => {
@@ -103,7 +108,6 @@ const Index = () => {
     };
     
     setActiveFilters(newFilters);
-    // The filtering is handled by the useEffect above
   };
 
   const handleLocationSelect = (location: LocationData | null) => {

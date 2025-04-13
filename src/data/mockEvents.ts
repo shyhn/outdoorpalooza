@@ -12,10 +12,11 @@ export interface EventData {
   location: {
     city: string;
     region: string;
+    country: string;
   };
 }
 
-// Coordonnées en France
+// Coordonnées en France et pays voisins
 export const mockEvents: EventData[] = [
   {
     id: '1',
@@ -29,7 +30,8 @@ export const mockEvents: EventData[] = [
     duration: 12,
     location: {
       city: 'Chamonix',
-      region: 'Auvergne-Rhône-Alpes'
+      region: 'Auvergne-Rhône-Alpes',
+      country: 'France'
     }
   },
   {
@@ -43,7 +45,8 @@ export const mockEvents: EventData[] = [
     duration: 5,
     location: {
       city: 'Castellane',
-      region: 'Provence-Alpes-Côte d\'Azur'
+      region: 'Provence-Alpes-Côte d\'Azur',
+      country: 'France'
     }
   },
   {
@@ -58,7 +61,8 @@ export const mockEvents: EventData[] = [
     duration: 4,
     location: {
       city: 'Apt',
-      region: 'Provence-Alpes-Côte d\'Azur'
+      region: 'Provence-Alpes-Côte d\'Azur',
+      country: 'France'
     }
   },
   {
@@ -72,7 +76,8 @@ export const mockEvents: EventData[] = [
     duration: 48,
     location: {
       city: 'Quiberon',
-      region: 'Bretagne'
+      region: 'Bretagne',
+      country: 'France'
     }
   },
   {
@@ -86,7 +91,8 @@ export const mockEvents: EventData[] = [
     duration: 6,
     location: {
       city: 'Fontainebleau',
-      region: 'Île-de-France'
+      region: 'Île-de-France',
+      country: 'France'
     }
   },
   {
@@ -101,7 +107,8 @@ export const mockEvents: EventData[] = [
     duration: 6,
     location: {
       city: 'Gavarnie',
-      region: 'Occitanie'
+      region: 'Occitanie',
+      country: 'France'
     }
   },
   {
@@ -115,7 +122,8 @@ export const mockEvents: EventData[] = [
     duration: 3,
     location: {
       city: 'La Roque-Gageac',
-      region: 'Nouvelle-Aquitaine'
+      region: 'Nouvelle-Aquitaine',
+      country: 'France'
     }
   },
   {
@@ -130,7 +138,39 @@ export const mockEvents: EventData[] = [
     duration: 5,
     location: {
       city: 'Mont-Saint-Michel',
-      region: 'Normandie'
+      region: 'Normandie',
+      country: 'France'
+    }
+  },
+  {
+    id: '9',
+    title: 'Escalade à Montserrat',
+    description: 'Escalade sur les formations rocheuses uniques de Montserrat',
+    type: 'climbing',
+    coords: [1.8351, 41.5908], // Montserrat
+    date: '2023-09-20',
+    difficulty: 'hard',
+    duration: 8,
+    location: {
+      city: 'Barcelone',
+      region: 'Catalogne',
+      country: 'Espagne'
+    }
+  },
+  {
+    id: '10',
+    title: 'Randonnée dans les Dolomites',
+    description: 'Découverte des paysages spectaculaires des Dolomites',
+    type: 'hiking',
+    coords: [11.8735, 46.4102], // Dolomites
+    date: '2023-07-25',
+    difficulty: 'moderate',
+    distance: 18,
+    duration: 7,
+    location: {
+      city: 'Cortina d\'Ampezzo',
+      region: 'Vénétie',
+      country: 'Italie'
     }
   }
 ];
