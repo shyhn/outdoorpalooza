@@ -21,7 +21,6 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/events" element={<Events />} />
           <Route path="/events/:id" element={<EventDetails />} />
-          <Route path="/search" element={<NotFound />} />
           <Route path="/profile" element={<NotFound />} />
           <Route path="/create-event" element={<NotFound />} />
           <Route path="*" element={<NotFound />} />
