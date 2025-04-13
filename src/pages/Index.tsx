@@ -2,14 +2,16 @@
 import React, { useState, useEffect } from 'react';
 import BottomNavigation from '../components/layout/BottomNavigation';
 import Map from '../components/map/Map';
-import { Search, Filter } from 'lucide-react';
+import { Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import EventsFilter from '../components/events/EventsFilter';
 import { mockEvents, EventData } from '@/data/mockEvents';
+import LocationAutocomplete, { LocationData } from '../components/search/LocationAutocomplete';
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<LocationData | null>(null);
   const [activeFilters, setActiveFilters] = useState<{
     type: string | null;
     difficulty: string | null;
@@ -21,17 +23,31 @@ const Index = () => {
   });
   const [filteredEvents, setFilteredEvents] = useState<EventData[]>(mockEvents);
 
-  // Effect to filter events when search query or active filters change
+  // Effect to filter events when search query, location, or active filters change
   useEffect(() => {
     let results = [...mockEvents];
     
-    // Filter by search query
+    // Filter by text search query
     if (searchQuery.trim() !== '') {
       const query = searchQuery.toLowerCase();
       results = results.filter(event => 
         event.title.toLowerCase().includes(query) || 
         event.description.toLowerCase().includes(query)
       );
+    }
+    
+    // Filter by selected location
+    if (selectedLocation) {
+      results = results.filter(event => {
+        if (selectedLocation.type === 'region') {
+          // Filter by region
+          return event.location.region === selectedLocation.name;
+        } else if (selectedLocation.type === 'city') {
+          // Filter by city
+          return event.location.city === selectedLocation.name;
+        }
+        return true;
+      });
     }
     
     // Filter by type
@@ -69,7 +85,7 @@ const Index = () => {
     }
     
     setFilteredEvents(results);
-  }, [searchQuery, activeFilters]);
+  }, [searchQuery, selectedLocation, activeFilters]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,6 +106,10 @@ const Index = () => {
     // The filtering is handled by the useEffect above
   };
 
+  const handleLocationSelect = (location: LocationData | null) => {
+    setSelectedLocation(location);
+  };
+
   return (
     <div className="min-h-screen bg-forest-50">
       {/* Search Bar */}
@@ -97,14 +117,10 @@ const Index = () => {
         <div className="max-w-4xl mx-auto flex flex-col gap-2">
           <form onSubmit={handleSearch}>
             <div className="relative">
-              <input
-                type="text"
-                placeholder="Find outdoor events near you..."
-                className="w-full h-12 pl-12 pr-4 rounded-full border border-gray-200 focus:outline-none focus:border-forest-500 bg-white"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+              <LocationAutocomplete
+                onLocationSelect={handleLocationSelect}
+                selectedLocation={selectedLocation}
               />
-              <Search className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
               <Button 
                 variant="outline" 
                 size="icon" 

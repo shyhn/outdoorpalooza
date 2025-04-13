@@ -9,6 +9,10 @@ export interface EventData {
   difficulty: 'easy' | 'moderate' | 'hard';
   distance?: number; // distance in km
   duration?: number; // duration in hours
+  location: {
+    city: string;
+    region: string;
+  };
 }
 
 // Coordonnées en France
@@ -22,7 +26,11 @@ export const mockEvents: EventData[] = [
     date: '2023-08-15',
     difficulty: 'hard',
     distance: 22,
-    duration: 12
+    duration: 12,
+    location: {
+      city: 'Chamonix',
+      region: 'Auvergne-Rhône-Alpes'
+    }
   },
   {
     id: '2',
@@ -32,7 +40,11 @@ export const mockEvents: EventData[] = [
     coords: [6.3289, 43.7559], // Gorges du Verdon
     date: '2023-07-20',
     difficulty: 'moderate',
-    duration: 5
+    duration: 5,
+    location: {
+      city: 'Castellane',
+      region: 'Provence-Alpes-Côte d\'Azur'
+    }
   },
   {
     id: '3',
@@ -43,7 +55,11 @@ export const mockEvents: EventData[] = [
     date: '2023-09-05',
     difficulty: 'moderate',
     distance: 35,
-    duration: 4
+    duration: 4,
+    location: {
+      city: 'Apt',
+      region: 'Provence-Alpes-Côte d\'Azur'
+    }
   },
   {
     id: '4',
@@ -53,7 +69,11 @@ export const mockEvents: EventData[] = [
     coords: [-2.5142, 47.8566], // Quiberon
     date: '2023-08-25',
     difficulty: 'easy',
-    duration: 48
+    duration: 48,
+    location: {
+      city: 'Quiberon',
+      region: 'Bretagne'
+    }
   },
   {
     id: '5',
@@ -63,7 +83,11 @@ export const mockEvents: EventData[] = [
     coords: [2.6987, 48.4047], // Fontainebleau
     date: '2023-07-18',
     difficulty: 'moderate',
-    duration: 6
+    duration: 6,
+    location: {
+      city: 'Fontainebleau',
+      region: 'Île-de-France'
+    }
   },
   {
     id: '6',
@@ -74,7 +98,11 @@ export const mockEvents: EventData[] = [
     date: '2023-09-12',
     difficulty: 'moderate',
     distance: 14,
-    duration: 6
+    duration: 6,
+    location: {
+      city: 'Gavarnie',
+      region: 'Occitanie'
+    }
   },
   {
     id: '7',
@@ -84,7 +112,11 @@ export const mockEvents: EventData[] = [
     coords: [1.2157, 44.8360], // La Roque-Gageac
     date: '2023-07-30',
     difficulty: 'easy',
-    duration: 3
+    duration: 3,
+    location: {
+      city: 'La Roque-Gageac',
+      region: 'Nouvelle-Aquitaine'
+    }
   },
   {
     id: '8',
@@ -95,6 +127,10 @@ export const mockEvents: EventData[] = [
     date: '2023-08-05',
     difficulty: 'easy',
     distance: 45,
-    duration: 5
+    duration: 5,
+    location: {
+      city: 'Mont-Saint-Michel',
+      region: 'Normandie'
+    }
   }
 ];

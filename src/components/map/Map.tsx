@@ -44,6 +44,16 @@ const Map: React.FC<MapProps> = ({
         activePOIFilter={activePOIFilter}
         togglePOIFilter={togglePOIFilter}
       />
+
+      {/* Empty state for no filtered events */}
+      {filteredEvents && filteredEvents.length === 0 && !loading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 z-20">
+          <div className="text-center p-4 rounded-lg">
+            <h3 className="text-lg font-medium text-gray-900">Aucun événement trouvé</h3>
+            <p className="text-sm text-gray-600 mt-1">Essayez d'autres filtres ou une autre localisation</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

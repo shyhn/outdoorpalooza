@@ -17,7 +17,7 @@ interface UseMapboxReturn {
   mapContainer: React.RefObject<HTMLDivElement>;
   map: React.RefObject<mapboxgl.Map | null>;
   loading: boolean;
-  addEventMarker: (coords: [number, number], title: string, type: string, eventId: string) => void;
+  addEventMarker: (coords: [number, number], title: string, type: string, eventId: string, locationInfo?: string) => void;
 }
 
 const useMapbox = ({ 
@@ -68,8 +68,14 @@ const useMapbox = ({
       
       // Add filtered event markers
       eventsToShow.forEach(event => {
-        addEventMarker(event.coords, event.title, event.type, event.id);
+        const locationInfo = `${event.location.city}, ${event.location.region}`;
+        addEventMarker(event.coords, event.title, event.type, event.id, locationInfo);
       });
+      
+      // If we have filtered events and they're not too many, adjust the map view
+      if (eventsToShow.length > 0 && eventsToShow.length < 5) {
+        fitMapToMarkers(eventsToShow.map(event => event.coords));
+      }
     }
   }, [eventsToShow, loading]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -113,7 +119,8 @@ const useMapbox = ({
         if (!eventsToShow || eventsToShow === mockEvents) {
           // Add all mock events as markers
           mockEvents.forEach(event => {
-            addEventMarker(event.coords, event.title, event.type, event.id);
+            const locationInfo = `${event.location.city}, ${event.location.region}`;
+            addEventMarker(event.coords, event.title, event.type, event.id, locationInfo);
           });
         }
       });
@@ -122,8 +129,25 @@ const useMapbox = ({
     }
   };
 
+  // Function to fit map to show all markers
+  const fitMapToMarkers = (coordinates: [number, number][]) => {
+    if (!map.current || coordinates.length === 0) return;
+    
+    // Calculate bounds that include all coordinates
+    const bounds = new mapboxgl.LngLatBounds();
+    coordinates.forEach(coord => {
+      bounds.extend(coord);
+    });
+    
+    // Add some padding to the bounds
+    map.current.fitBounds(bounds, {
+      padding: 50,
+      maxZoom: 12
+    });
+  };
+
   // Function to add event markers to the map
-  const addEventMarker = (coords: [number, number], title: string, type: string, eventId: string) => {
+  const addEventMarker = (coords: [number, number], title: string, type: string, eventId: string, locationInfo?: string) => {
     if (!map.current) return;
     
     // Create custom marker element
@@ -160,12 +184,17 @@ const useMapbox = ({
     el.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
     el.style.cursor = 'pointer';
     
-    // Add popup
+    // Add popup with location info
+    const locationHtml = locationInfo 
+      ? `<p class="text-xs text-gray-500 mt-1">${locationInfo}</p>` 
+      : '';
+      
     const popup = new mapboxgl.Popup({ offset: 25 })
       .setHTML(`
         <div class="p-2">
           <h3 class="font-semibold">${title}</h3>
-          <p class="text-sm text-gray-600">
+          ${locationHtml}
+          <p class="text-sm text-gray-600 mt-2">
             <a href="/events/${eventId}" style="color: #2563eb; text-decoration: underline;">
               Voir détails
             </a>
