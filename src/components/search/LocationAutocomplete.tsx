@@ -162,6 +162,13 @@ const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({
     inputRef.current?.focus();
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(e.target.value);
+    if (!open) {
+      setOpen(true);
+    }
+  };
+
   // Grouper les localisations par type
   const countries = filteredLocations.filter(location => location.type === 'country');
   const regions = filteredLocations.filter(location => location.type === 'region');
@@ -177,8 +184,8 @@ const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({
             placeholder="Rechercher un pays, une région ou une ville..."
             className="w-full h-12 pl-10 pr-10 rounded-full border border-gray-200 focus:outline-none focus:border-forest-500 bg-white"
             value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            onFocus={() => setOpen(true)}
+            onChange={handleInputChange}
+            onClick={() => setOpen(true)}
             onKeyDown={(e) => {
               if (e.key === 'Escape') {
                 setOpen(false);
