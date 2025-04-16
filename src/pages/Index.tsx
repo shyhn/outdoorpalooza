@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import BottomNavigation from '../components/layout/BottomNavigation';
 import Map from '../components/map/Map';
@@ -6,7 +5,8 @@ import { Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import EventsFilter from '../components/events/EventsFilter';
 import { mockEvents, EventData } from '@/data/mockEvents';
-import LocationAutocomplete, { LocationData } from '../components/search/LocationAutocomplete';
+import LocationAutocomplete from '../components/search/LocationAutocomplete';
+import { LocationData } from '@/types/location';
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -23,11 +23,9 @@ const Index = () => {
   });
   const [filteredEvents, setFilteredEvents] = useState<EventData[]>(mockEvents);
 
-  // Effect to filter events when search query, location, or active filters change
   useEffect(() => {
     let results = [...mockEvents];
     
-    // Filter by text search query
     if (searchQuery.trim() !== '') {
       const query = searchQuery.toLowerCase();
       results = results.filter(event => 
@@ -36,18 +34,14 @@ const Index = () => {
       );
     }
     
-    // Filter by selected location
     if (selectedLocation) {
       results = results.filter(event => {
-        // Match par pays
         if (selectedLocation.type === 'country') {
           return event.location.country === selectedLocation.name;
         }
-        // Match par région
         else if (selectedLocation.type === 'region') {
           return event.location.region === selectedLocation.name;
         }
-        // Match par ville
         else if (selectedLocation.type === 'city') {
           return event.location.city === selectedLocation.name;
         }
@@ -55,21 +49,18 @@ const Index = () => {
       });
     }
     
-    // Filter by type
     if (activeFilters.type) {
       results = results.filter(event => event.type === activeFilters.type);
     }
     
-    // Filter by difficulty
     if (activeFilters.difficulty) {
       results = results.filter(event => event.difficulty === activeFilters.difficulty);
     }
     
-    // Filter by date
     if (activeFilters.date) {
       const today = new Date();
       const weekend = new Date(today);
-      weekend.setDate(today.getDate() + (6 - today.getDay())); // Next Saturday
+      weekend.setDate(today.getDate() + (6 - today.getDay()));
       
       const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
       
@@ -94,7 +85,6 @@ const Index = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    // Le filtrage est géré par l'useEffect ci-dessus
   };
 
   const toggleFilters = () => {
@@ -116,7 +106,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-forest-50">
-      {/* Search Bar */}
       <div className="fixed top-0 left-0 right-0 p-4 bg-white bg-opacity-90 backdrop-blur-lg z-40">
         <div className="max-w-4xl mx-auto flex flex-col gap-2">
           <form onSubmit={handleSearch}>
@@ -147,7 +136,6 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Main Content - Interactive Map */}
       <main className="pt-28 pb-20 px-4">
         <div className="w-full h-[calc(100vh-12rem)]">
           <Map filteredEvents={filteredEvents} />
