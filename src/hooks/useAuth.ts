@@ -1,15 +1,15 @@
 
 import { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
 import { toast } from '@/hooks/use-toast';
 
 const supabaseUrl = 'https://ebkoafzdinuimsmbyftj.supabase.co';
 const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVia29hZnpkaW51aW1zbWJ5ZnRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ1MzQyNTcsImV4cCI6MjA2MDExMDI1N30.8e8EMWXVz5luk1aROD3rQa1ieDBWVsYEwE5ipoP__Bs';
 
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+const supabase: SupabaseClient = createClient(supabaseUrl, supabaseAnonKey);
 
 export const useAuth = () => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
