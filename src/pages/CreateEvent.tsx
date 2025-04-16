@@ -2,12 +2,11 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useNavigate } from 'react-router-dom';
-import { CalendarIcon, Upload, MapPin, Clock, Users, File, ImageIcon } from 'lucide-react';
+import { CalendarIcon, Upload, MapPin, Clock, Users, File, ImageIcon, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
-import { useAuth } from '@/hooks/useAuth';
+import { useProtectedRoute } from '@/hooks/useProtectedRoute';
 import { useToast } from '@/hooks/use-toast';
 import BottomNavigation from '@/components/layout/BottomNavigation';
 import { Button } from '@/components/ui/button';
@@ -76,9 +75,10 @@ const eventFormSchema = z.object({
 type EventFormValues = z.infer<typeof eventFormSchema>;
 
 const CreateEvent = () => {
-  const { user } = useAuth();
-  const navigate = useNavigate();
   const { toast } = useToast();
+  const { isLoading, user } = useProtectedRoute({
+    message: "Vous devez être connecté pour créer un événement."
+  });
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [gpxFile, setGpxFile] = useState<File | null>(null);
 
@@ -95,17 +95,6 @@ const CreateEvent = () => {
       maxParticipants: "",
     },
   });
-
-  React.useEffect(() => {
-    if (!user) {
-      toast({
-        title: "Connexion requise",
-        description: "Vous devez être connecté pour créer un événement.",
-        variant: "destructive",
-      });
-      navigate('/auth');
-    }
-  }, [user, navigate, toast]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -154,6 +143,26 @@ const CreateEvent = () => {
     
     navigate('/events');
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-forest-50 flex flex-col items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="text-xl font-bold text-forest-800">Chargement</CardTitle>
+            <CardDescription>Vérification de votre identité...</CardDescription>
+          </CardHeader>
+          <CardContent className="flex justify-center py-6">
+            <Loader2 className="h-16 w-16 text-forest-600 animate-spin" />
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-forest-50 p-4 pb-20">
