@@ -17,12 +17,10 @@ const BottomNavigation = () => {
         <NavItem icon={<Users className="w-6 h-6" />} label="Events" to="/events" />
         
         {user ? (
-          <NavItem 
-            icon={<User className="w-6 h-6" />} 
-            label="Profile" 
-            to="/profile" 
-            onClick={signOut} 
-          />
+          <Link to="/profile" className="flex flex-col items-center justify-center w-12" onClick={signOut}>
+            <div className="text-forest-600"><User className="w-6 h-6" /></div>
+            <span className="text-xs mt-1 text-forest-800">Profile</span>
+          </Link>
         ) : (
           <Dialog>
             <DialogTrigger asChild>
