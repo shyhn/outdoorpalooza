@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useNavigate } from 'react-router-dom';
-import { CalendarIcon, Upload, MapPin, Clock, Users, FileGpx, ImageIcon } from 'lucide-react';
+import { CalendarIcon, Upload, MapPin, Clock, Users, File, ImageIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
@@ -44,7 +43,6 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 
-// Form schema
 const eventFormSchema = z.object({
   title: z.string().min(3, {
     message: "Le titre doit contenir au moins 3 caractères.",
@@ -98,7 +96,6 @@ const CreateEvent = () => {
     },
   });
 
-  // Redirect if user is not logged in
   React.useEffect(() => {
     if (!user) {
       toast({
@@ -110,18 +107,14 @@ const CreateEvent = () => {
     }
   }, [user, navigate, toast]);
 
-  // Handle image upload
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
-      // Convert FileList to array and create preview URLs
       const imageFiles = Array.from(files);
       const imageUrls = imageFiles.map(file => URL.createObjectURL(file));
       
-      // Add new images to the existing ones
       setUploadedImages(prev => [...prev, ...imageUrls]);
       
-      // Success toast
       toast({
         title: "Images ajoutées",
         description: `${imageFiles.length} image(s) ajoutée(s) avec succès.`,
@@ -129,12 +122,10 @@ const CreateEvent = () => {
     }
   };
 
-  // Handle GPX file upload
   const handleGpxUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files[0]) {
       const file = files[0];
-      // Check if it's a GPX file
       if (file.name.endsWith('.gpx')) {
         setGpxFile(file);
         toast({
@@ -151,20 +142,16 @@ const CreateEvent = () => {
     }
   };
 
-  // Form submission handler
   const onSubmit = async (data: EventFormValues) => {
-    // For demo purposes, we'll just show the data in a toast and console
     console.log("Form data:", data);
     console.log("Images:", uploadedImages.length);
     console.log("GPX file:", gpxFile);
     
-    // In a real app, you would upload the data to Supabase here
     toast({
       title: "Événement créé",
       description: "Votre événement a été créé avec succès !",
     });
     
-    // Redirect to events page
     navigate('/events');
   };
 
@@ -180,7 +167,6 @@ const CreateEvent = () => {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              {/* Basic Information Section */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-forest-700 border-b pb-2">
                   📝 Informations de base
@@ -257,7 +243,6 @@ const CreateEvent = () => {
                 </div>
               </div>
               
-              {/* Event Details Section */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-forest-700 border-b pb-2">
                   📅 Détails de l'événement
@@ -418,7 +403,6 @@ const CreateEvent = () => {
                 />
               </div>
               
-              {/* Media Upload Section */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-forest-700 border-b pb-2">
                   📸 Médias
@@ -465,7 +449,7 @@ const CreateEvent = () => {
                         htmlFor="gpxUpload" 
                         className="cursor-pointer flex flex-col items-center"
                       >
-                        <FileGpx className="h-10 w-10 text-gray-400 mb-2" />
+                        <File className="h-10 w-10 text-gray-400 mb-2" />
                         <span className="text-sm font-medium text-forest-700">
                           Cliquez pour ajouter un fichier GPX
                         </span>
@@ -476,14 +460,13 @@ const CreateEvent = () => {
                     </div>
                     {gpxFile && (
                       <div className="mt-2 text-sm text-forest-600 bg-forest-50 p-2 rounded flex items-center">
-                        <FileGpx className="h-4 w-4 mr-2" />
+                        <File className="h-4 w-4 mr-2" />
                         {gpxFile.name}
                       </div>
                     )}
                   </div>
                 </div>
                 
-                {/* Image Preview Carousel */}
                 {uploadedImages.length > 0 && (
                   <div className="mt-4">
                     <h4 className="text-sm font-medium mb-2">Aperçu des images</h4>
