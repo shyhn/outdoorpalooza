@@ -10,6 +10,7 @@ import NotFound from "./pages/NotFound";
 import Events from "./pages/Events";
 import EventDetails from "./pages/EventDetails";
 import Profile from "./pages/Profile";
+import CreateEvent from "./pages/CreateEvent";
 
 const queryClient = new QueryClient();
 
@@ -25,7 +26,7 @@ const App = () => (
           <Route path="/events/:id" element={<EventDetails />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/create-event" element={<NotFound />} />
+          <Route path="/create-event" element={<CreateEvent />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

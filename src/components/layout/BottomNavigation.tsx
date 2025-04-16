@@ -32,11 +32,33 @@ const BottomNavigation = () => {
     }
   };
 
+  const handleCreateEvent = () => {
+    if (!user) {
+      toast({
+        title: "Connexion requise",
+        description: "Vous devez être connecté pour créer un événement.",
+        variant: "destructive",
+      });
+      navigate('/auth');
+    } else {
+      navigate('/create-event');
+    }
+  };
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white bg-opacity-90 backdrop-blur-lg border-t border-gray-200 z-50">
       <div className="max-w-md mx-auto px-6 h-16 flex items-center justify-between">
         <NavItem icon={<MapPin className="w-6 h-6" />} label="Explorer" to="/" />
-        <NavItem icon={<Plus className="w-6 h-6" />} label="Créer" to="/create-event" />
+        
+        <Button 
+          variant="ghost" 
+          className="flex flex-col items-center justify-center w-12 h-12"
+          onClick={handleCreateEvent}
+        >
+          <Plus className="w-6 h-6 text-forest-600" />
+          <span className="text-xs mt-1 text-forest-800">Créer</span>
+        </Button>
+        
         <NavItem icon={<Users className="w-6 h-6" />} label="Événements" to="/events" />
         
         {user ? (
